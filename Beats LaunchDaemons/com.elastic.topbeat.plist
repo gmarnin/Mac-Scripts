@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>co.elastic.filebeat</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Library/Application Support/Topbeat/topbeat</string>
+        <string>-e</string>
+        <string>-c</string>
+        <string>/Library/Application Support/Topbeat/topbeat.yml</string>
+        <string>-d</string>
+        <string>”publish”</string> 
+    </array>
+  	<key>RunAtLoad</key>
+	<true/>  
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardErrorPath</key>
+	<string>/var/log/topbeat-forwarder.log</string>
+	<key>StandardOutPath</key>
+	<string>/var/log/topbeat-forwarder.log</string>
+	<key>WorkingDirectory</key>
+	<string>/var/run</string>
+</dict>
+</plist>
