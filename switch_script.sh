@@ -15,11 +15,11 @@ echo ""
 /usr/sbin/tcpdump -nn -v -i en0 -s 1500 -c 1 'ether[20:2] == 0x2000' > /tmp/network.txt
 
 
-Port=`cat /tmp/network.txt | grep Port-ID | awk '{print $6}' | tr -d "'"`
-Vlan=`cat /tmp/network.txt | grep "Native VLAN ID" | awk '{print $8}'`
-Physical_location_switch=`cat /tmp/network.txt | grep "Physical Location" | awk '{print $7}'`
-Switch_name=`cat /tmp/network.txt | grep "Device-ID" | awk '{print $6}' | tr -d "'"`
-Switch_ip=`cat /tmp/network.txt | grep "Management Addresses" | awk '{print $9}'`
+Port=`cat /tmp/network.txt | grep Port-ID | awk '{print $7}' | tr -d "'"`
+Vlan=`cat /tmp/network.txt | grep "Native VLAN ID" | awk '{print $9}'`
+Physical_location_switch=`cat /tmp/network.txt | grep "Physical Location" | awk '{print $8}'`
+Switch_name=`cat /tmp/network.txt | grep "Device-ID" | awk '{print $7}' | tr -d "'"`
+Switch_ip=`cat /tmp/network.txt | grep "Management Addresses" | awk '{print $10}'`
 
 echo ""
 echo ""
