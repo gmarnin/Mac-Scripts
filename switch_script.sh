@@ -1,38 +1,66 @@
-#!/bin/sh
+#!/bin/bash
 
-# Find Cisco Port Discovery (CDP) for a Mac
+# find Cisco Port Discovery (CDP) for a Mac
 
-# Version .2 | 5/2014 | Marnin RU ITS
+# version .3 | 10/2016 | Marnin RU ITS
 
 ComputerName=`/bin/hostname`
-ip_en0=`ipconfig getifaddr en0 2>&1`
 
 echo ""
-echo "Please be patient as this script can take up to 30 seconds to run...still beats using a Fluke in the field"
+echo "If Ethernet interface is active, this script can take up to 30 seconds to run."
+echo "Still beats using the Fluke in the field. Please be patient."
 echo ""
 
-# en0 is hard coded here
-/usr/sbin/tcpdump -nn -v -i en0 -s 1500 -c 1 'ether[20:2] == 0x2000' > /tmp/network.txt
+# grap the active port. source: https://www.jamf.com/jamf-nation/discussions/18174/ea-to-determine-the-current-network-negotiation-speed
+allPorts=$(/usr/sbin/networksetup -listallhardwareports | awk -F' ' '/Device:/{print $NF}')
+
+while read Port; do
+    if [[ $(ifconfig "$Port" 2>/dev/null | awk '/status:/{print $NF}') == "active" ]]; then
+        ActivePort="$Port"
+        ActivePortName=$(/usr/sbin/networksetup -listallhardwareports | grep -B1 "$port" | awk -F': ' '/Hardware Port/{print $NF}')
+        break
+    fi
+done  < <(printf '%s\n' "$allPorts")
+
+if [[ "$ActivePortName" =~ "Ethernet" ]]; then
+	LinkSpeed=$(/sbin/ifconfig $ActivePort | awk -F': ' '/media:/{print $NF}'	| grep -o "[0-9]\{1,5\}baseT")
+	HardwareAddress=`/sbin/ifconfig $ActivePort | awk '/ether/{print $2}' | head -1`
+	MacIP=`/usr/sbin/ipconfig getifaddr $ActivePort 2>&1`
+
+	elif [[ "$ActivePortName" =~ "Wi-Fi" ]]; then
+	echo "Wi-Fi is the active port, exiting"
+	exit 1
+
+	else 
+	echo "Not sure what the active network port is, exiting"
+	exit 1 
+fi
+
+# query the switch
+/usr/sbin/tcpdump -nn -v -i $ActivePort -s 1500 -c 1 'ether[20:2] == 0x2000' > /tmp/network.txt
 
 
-Port=`cat /tmp/network.txt | grep Port-ID | awk '{print $7}' | tr -d "'"`
+Switch_Port=`cat /tmp/network.txt | grep Port-ID | awk '{print $7}' | tr -d "'"`
 Vlan=`cat /tmp/network.txt | grep "Native VLAN ID" | awk '{print $9}'`
 Physical_location_switch=`cat /tmp/network.txt | grep "Physical Location" | awk '{print $8}'`
 Switch_name=`cat /tmp/network.txt | grep "Device-ID" | awk '{print $7}' | tr -d "'"`
 Switch_ip=`cat /tmp/network.txt | grep "Management Addresses" | awk '{print $10}'`
 
+
 echo ""
+echo "Mac Results:"
+echo "Computer Name: $ComputerName"
+echo "Mac IP ($ActivePort) = $MacIP"
+echo "Mac, MAC Address = $HardwareAddress"
+echo "Link Speed: $LinkSpeed" 
 echo ""
-echo "For Mac: $ComputerName"
-echo "Mac ip (en0) = $ip_en0"
-echo "Port = $Port"
+echo "Switch Results:"
+echo "Switch Port = $Switch_Port"
 echo "Vlan = $Vlan"
 echo "Switch Location = $Physical_location_switch"
 echo "Switch Name = $Switch_name"
 echo "Switch IP = $Switch_ip"
 echo ""
 echo ""
-
-
 
 exit 0
