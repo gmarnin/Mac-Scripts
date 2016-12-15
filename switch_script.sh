@@ -17,7 +17,7 @@ echo "If the Ethernet interface is active, this script can take up to 30 seconds
 echo "Still beats using a Fluke in the field. Please be patient."
 echo ""
 
-# grap the active port. source: https://www.jamf.com/jamf-nation/discussions/18174/ea-to-determine-the-current-network-negotiation-speed
+# grab the active port. source: https://www.jamf.com/jamf-nation/discussions/18174/ea-to-determine-the-current-network-negotiation-speed
 allPorts=$(/usr/sbin/networksetup -listallhardwareports | awk -F' ' '/Device:/{print $NF}')
 
 while read Port; do
