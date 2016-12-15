@@ -1,14 +1,20 @@
 #!/bin/bash
 
-# find Cisco Port Discovery (CDP) for a Mac
+# find Cisco Port Discovery (CDP) from a Mac
 
-# version .3 | 10/2016 | Marnin RU ITS
+# version .4 | 12/2017 | Marnin RU ITS
+
+# check for root privileges
+if [ $USER != root ]; then
+    echo "Please run script with root privileges, exiting"
+    exit 1
+fi
 
 ComputerName=`/bin/hostname`
 
 echo ""
-echo "If Ethernet interface is active, this script can take up to 30 seconds to run."
-echo "Still beats using the Fluke in the field. Please be patient."
+echo "If the Ethernet interface is active, this script can take up to 30 seconds to run."
+echo "Still beats using a Fluke in the field. Please be patient."
 echo ""
 
 # grap the active port. source: https://www.jamf.com/jamf-nation/discussions/18174/ea-to-determine-the-current-network-negotiation-speed
@@ -31,9 +37,9 @@ if [[ "$ActivePortName" =~ "Ethernet" ]]; then
 	echo "Wi-Fi is the active port, exiting"
 	exit 1
 
-	else 
+	else
 	echo "Not sure what the active network port is, exiting"
-	exit 1 
+	exit 1
 fi
 
 # query the switch
@@ -52,7 +58,7 @@ echo "Mac Results:"
 echo "Computer Name: $ComputerName"
 echo "Mac IP ($ActivePort) = $MacIP"
 echo "Mac, MAC Address = $HardwareAddress"
-echo "Link Speed: $LinkSpeed" 
+echo "Link Speed: $LinkSpeed"
 echo ""
 echo "Switch Results:"
 echo "Switch Port = $Switch_Port"
