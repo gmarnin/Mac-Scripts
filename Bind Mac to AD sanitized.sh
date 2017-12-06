@@ -57,6 +57,23 @@ echo "Setting the time:"
 # Fully qualified DNS name of Active Directory Domain
 domain="domain.rutgers.edu"
 echo
+PS3="Which OU number:"
+echo "Select a OU number from the list below:"
+select name in Staff Students Labs InformationTechnology SpecialAccounts Test GraduateSchool Other
+
+do
+break
+done
+
+if [ "$name" = "Other" ]; then
+	echo "Enter OU number:"
+	read name
+fi
+
+echo "OU $name has been selected"
+echo "OU=macworkstations,OU=devices,OU=$name,DC=DOMAIN,DC=rutgers,DC=edu"
+ou="OU=macworkstations,OU=devices,OU=$name,DC=DOMAIN,DC=rutgers,DC=edu"
+echo
 echo "Enter username of a privileged AD user:"			
 read userid
 echo
@@ -82,7 +99,7 @@ namespace="domain"
 ### End of configuration
 
 # Bind to Active Directory
-/usr/sbin/dsconfigad -add $domain -username $userid -password $password -computer $computerid -groups "$admingroups" -alldomains $alldomains -localhome $localhome -protocol $protocol -mobile $mobile -mobileconfirm $mobileconfirm -useuncpath $useuncpath -shell $user_shell $preferred -packetsign $packetsign -packetencrypt $packetencrypt -passinterval $passinterval -namespace $namespace
+/usr/sbin/dsconfigad -add $domain -username $userid -password $password -computer $computerid -groups "$admingroups" -alldomains $alldomains -localhome $localhome -protocol $protocol -mobile $mobile -mobileconfirm $mobileconfirm -useuncpath $useuncpath -shell $user_shell $preferred -packetsign $packetsign -packetencrypt $packetencrypt -passinterval $passinterval -namespace $namespace -ou "$ou"
 
 # Restart opendirectoryd (necessary to reload AD plugin activation settings)
 /usr/bin/killall opendirectoryd
